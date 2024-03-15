@@ -1,12 +1,13 @@
 """
-To be used to demonstrate how unit tests can validate the lack of errors
+To be used to demonstrate how unit tests can indicate the presence of errors
 in code.
+
+You'll learn how to write tests that are easy to understand and use useful
+abstractions.
 """
-
 import math
-EARTH_RADIUS_IN_KILOMETERS = 6371
 
-def great_circle_distance(latitude1, longitude1, latitude2, longitude2, radius=EARTH_RADIUS_IN_KILOMETERS):
+def great_circle_distance(latitude1, longitude1, latitude2, longitude2):
     """An implementation of the Haversine formula, to calculate the shortest
     distance along the surface of a sphere between two points.
     """
@@ -19,4 +20,4 @@ def great_circle_distance(latitude1, longitude1, latitude2, longitude2, radius=E
     a = math.pow(sin_lat_half_diff, 2.0) + math.cos(lat1) * math.cos(
         lat2
     ) * math.pow(sin_long_half_diff, 2.0)
-    return math.asin(a) * (2 * radius)
+    return math.asin(a) * (2 * 6371)
