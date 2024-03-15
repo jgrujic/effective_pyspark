@@ -10,14 +10,34 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from exercises.c_labellers.dates import (
+from exercises.c_labellers.dates_solution import (
     label_weekend,
     is_belgian_holiday,
     label_holidays,
 )
 from tests.comparers import assert_frames_functionally_equivalent
 
+# This is not the best approach to creating a Spark Session for a test suite,
+# since you only want one for the entire one. However, to explain that, we're
+# going again into the domain of how testing frameworks like nose, pytest and
+# unittest work, and that is not in the scope of this workshop. For pytest,
+# read up on fixtures, if you want to know more.
 spark = SparkSession.builder.master("local[*]").getOrCreate()
+
+def test_pure_python_function():
+    # Tests that don't initialize a SparkSession finish almost instantly. Try
+    # this test and compare it to any other test in this file to compare tests
+    # that depend on a SparkSession.
+    # For this reason, tests involving Spark are typically run less often than
+    # tests without Spark, though a good Continuous Integration system will
+    # still run _all_ tests, before merging to the main branch!
+    day1 = dt.date(2020, 7, 21)
+    national_holiday = dt.date(2020, 7, 21)
+    day_after_national_holiday = dt.date(2020, 7, 22)
+
+    assert is_belgian_holiday(day1)
+    assert is_belgian_holiday(national_holiday)
+    assert not is_belgian_holiday(day_after_national_holiday)
 
 
 def test_label_weekend():
@@ -89,17 +109,3 @@ def test_label_holidays():
     # have to rewrite it.
 
 
-def test_pure_python_function():
-    # Tests that don't initialize a SparkSession finish almost instantly. Try
-    # this test and compare it to any other test in this file to compare tests
-    # that depend on a SparkSession.
-    # For this reason, tests involving Spark are typically run less often than
-    # tests without Spark, though a good Continuous Integration system will
-    # still run _all_ tests, before merging to the main branch!
-    day1 = dt.date(2020, 7, 21)
-    national_holiday = dt.date(2020, 7, 21)
-    day_after_national_holiday = dt.date(2020, 7, 22)
-
-    assert is_belgian_holiday(day1)
-    assert is_belgian_holiday(national_holiday)
-    assert not is_belgian_holiday(day_after_national_holiday)
