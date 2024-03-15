@@ -23,7 +23,7 @@ using Gitpod][this gitpod].
 [![Open in Gitpod][gitpod logo]][this gitpod]
 
 
-⚠ IMPORTANT: After 30min of inactivity the gitpod environment shuts down and
+⚠ IMPORTANT: After about 30 minutes of inactivity the Gitpod environment shuts down and
 you will lose unsaved progress.  If you want to save your work, either fork the
 repo or create a branch (permissions needed). Don't forget to regularly sync
 the upstream repo's changes in case of a fork, so that you can get the
@@ -60,20 +60,59 @@ Note: this course is not about writing the best pipelines possible. There are
 many ways to skin a cat, in this course we show one (or sometimes a few), which
 should be suitable for the level of the participants.
 
-## Exercises
+# Exercises
+
+## Warm-up: being comfortable with pytest
+
+#### Rationale
+
+This exercise is a warm-up and has nothing to do with PySpark. It is the
+_first_ exercise though, because with most subsequent exercises you can verify
+your own solutions simply by running the particular test written for whatever
+it is that you need to implement. This allows for greater autonomy.
+Additionally, this is exactly what you should be doing when you write code in a
+professional setting: have (and run) tests, so that you can make improvements
+that don't break the desired behaviour, or—when it does break—you're at least
+informed and can take action.
+
+Finally, it will allow yourself and the instructor to get a feeling for how
+much of Python you know so that you and the instructor can be proactive about
+asking for/providing assistance.
+
+#### Requirement
+
+Look into the
+[exercises/b_unit_test_demo/distance_metrics.py](exercises/b_unit_test_demo/distance_metrics.py)
+module. It contains a function that implements some mathematical formula known
+as the Haversine or great-circle-distance. Or at least it was an attempt. 
+
+Your task is to write at least one test that shows that the function as it is
+implemented is wrong. 
+
+When you have proven that, the instructor will show what was wrong and how you
+can improve your little test suite.
+
+#### Objective
+
+You will know how to
+
+- run a Python test, using the `pytest` command on the command line interface.
+- design tests that make useful abstractions for colleagues
+- understand dependency inversal
 
 ### Adding derived columns
 
 Check out [dates.py](exercises/c_labellers/dates.py) and implement the pure
-python function `is_belgian_holiday`. verify your correct implementation by
+Python function `is_belgian_holiday`. verify your correct implementation by
 running the test `test_pure_python_function` from
 [test_labellers](tests/test_labellers.py). you could do this from the command
-line with `pytest tests/test_labellers.py::test_pure_python_function`.
+line with `pytest tests/test_labellers.py::test_pure_python_function`. Note that this has nothing to do with PySpark yet, but it might just come in handy for a subsequent exercise…
 
-Return to [dates.py](exercises/c_labellers/dates.py) and
-implement `label_weekend`. Again, run the related test from
-[test_labellers.py](tests/test_labellers.py). It might be more useful to you if
-you first read the test.
+Return to [dates.py](exercises/c_labellers/dates.py) and implement
+`label_weekend`. This is your first encounter with PySpark in these exercises.
+Again, run the related test from [test_labellers.py](tests/test_labellers.py).
+It might be more useful to you if you first read the test and try to understand
+what it is testing for. Tests often enforce the functional requirements.
 
 Finally, implement `label_holidays` from [dates](exercises/c_labellers/dates.py). 
 As before, run the relevant test to verify a few easy cases (keep in mind that 
@@ -88,6 +127,11 @@ to `label_holidays` and discuss pros and cons.
 Using the information seen in the videos, prepare a sizeable dataset for 
 storage in "the clean zone" of a data lake, by implementing the `clean` 
 function of [clean_flights_starter.py](exercises/h_cleansers/clean_flights_starter.py).
+
+As a small aside: "clean zone" is arguably a better name for this part of your
+data storage layer than "silver" (raw-clean-business vs bronze-silver-gold),
+but in practice you'll hear all these variants. Try to keep them straight in
+your head.
 
 ### Peer review (optional)
 
