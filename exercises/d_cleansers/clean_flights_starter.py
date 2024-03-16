@@ -85,6 +85,7 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark import SparkConf
 import pyspark.sql.functions as sf
 from pyspark.sql.utils import AnalysisException
+from py4j.protocol import Py4JJavaError
 
 DEBUG = True
 
@@ -145,6 +146,8 @@ if __name__ == "__main__":
 
     # Extract
     try:
+        frame = load_non_local_data(location_of_data_in_the_cloud)
+    except Py4JJavaError as e:
         # We've added this block in case you have the dataset locally already and want to
         # develop faster. However, for the end goal, you should be getting your data from
         # the cloud service provider.
@@ -152,7 +155,12 @@ if __name__ == "__main__":
         location_of_local_data = resources_dir / "flights"
         frame = load_data_from_local(location_of_local_data)
     except AnalysisException:
-        frame = load_non_local_data(location_of_data_in_the_cloud)
+        print("Both attempting to load directly from cloud storage and from the"
+              " local file system failed. Either implement the required "
+              "configuration to load from the cloud storage or ensure you have "
+              "the files locally (e.g. with the fallback.sh script).")
+        import sys
+        sys.exit(1)
 
     # Transform
     cleaned_frame = naive_clean(frame)
