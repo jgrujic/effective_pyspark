@@ -13,7 +13,7 @@ from pyspark.sql.types import (
 from exercises.c_labellers.dates_solution import (
     label_weekend,
     is_belgian_holiday,
-    label_holidays,
+    label_holidays as label_holidays,  # Allows easier switching for people looking into the alternative forms. Simply replace the first word with label_holidays2 or label_holidays3.
 )
 from tests.comparers import assert_frames_functionally_equivalent
 
@@ -72,30 +72,21 @@ def test_label_weekend():
 def test_label_holidays():
     fields = [
         StructField("date", DateType(), True),
-        StructField("foobar", StringType(), True),
         StructField("is_belgian_holiday", BooleanType(), True),
+        StructField("foobar", StringType(), True),
     ]
-    input = spark.createDataFrame(
-        [
-            (date(2000, 1, 1), "foo"),  # New Year's
-            (date(2018, 7, 21), "bar"),  # Belgian national holiday
-            (date(2019, 12, 6), "fubar"),  # Saint-Nicholas
-            (None, "fubar"),
-        ],
-        schema=StructType(fields[:2]),
-    )
-
-    result = label_holidays(input)
-
     expected = spark.createDataFrame(
         [
-            (date(2000, 1, 1), "foo", True),
-            (date(2018, 7, 21), "bar", True),
-            (date(2019, 12, 6), "fubar", False),
-            (None, "fubar", None)
+            (date(2000, 1, 1), True, "foo"),  # New Year's
+            (date(2018, 7, 21), True, "bar"),  # Belgian national holiday
+            (date(2019, 12, 6), False, "fubar"),  # Saint-Nicholas
+            (None, None, "fubar"),
         ],
         schema=StructType(fields),
     )
+
+    result = label_holidays(expected.drop("is_belgian_holiday"))
+
     assert_frames_functionally_equivalent(result, expected, False)
 
     # Notes: this test highlights well that tests are a form of up-to-date documentation.
