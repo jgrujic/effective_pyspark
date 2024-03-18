@@ -19,7 +19,7 @@ def main(spark: SparkSession):
     df = df.drop("_c4").distinct()
 
     df.write.parquet(
-        path=str(repo_root / "clean_zone" / "carriers"),
+        path=str(repo_root / "data" / "clean_zone" / "carriers"),
         mode="overwrite",
     )
 
