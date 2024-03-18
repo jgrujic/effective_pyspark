@@ -148,6 +148,6 @@ Putting solutions on a different branch has some downsides, such as making it
 hard to keep partial files (the starters) aligned with their solutions in, for
 example, the function definitions.
 
-[this gitpod]: https://gitpod.io/#https://github.com/datamindedacademy/effective_pyspark
+[this gitpod]: https://gitpod.io/#https://github.com/jgrujic/effective_pyspark
 [gitpod logo]: https://gitpod.io/button/open-in-gitpod.svg
 [Data Minded Academy]: https://www.dataminded.academy/
