@@ -23,8 +23,8 @@ DEBUG = False
 def naive_clean(frame: DataFrame) -> DataFrame:
        
     frame = drop_extra_columns(frame)   
-    frame = correct_timestamps(frame) 
-    frame = rename_and_cast_columns(frame)  
+    # frame = correct_timestamps(frame) 
+    # frame = rename_and_cast_columns(frame)  
     print(frame.columns)
     frame.show()
     return frame
@@ -63,18 +63,19 @@ def rename_and_cast_columns(df):
     list_int = [
         'TAIL_NUM', 'FL_NUM',
         'CARRIER_DELAY', 'WEATHER_DELAY', 'NAS_DELAY', 'SECURITY_DELAY', 'LATE_AIRCRAFT_DELAY', 
-        'AIR_TIME', 'ACTUAL_ELAPSED_TIME',
+        'AIR_TIME', 'ACTUAL_ELAPSED_TIME', 'TAXI_OUT', 'TAXI_IN',
     ]
 
     for c in list_int:
         df = df.withColumn(c.lower(), col(c).cast(ShortType()))
 
-    df.select("CANCELLED", "DIVERTED").show()    
+
     list_bool =[
         'CANCELLED', 'DIVERTED',
-
     ]
-
+    for c in list_bool:
+        df = df.withColumn(c.lower(), col(c).cast(ShortType()).cast(BooleanType()))
+    df.select("cancelled", "diverted").show()    
     return df
 
 
@@ -170,7 +171,8 @@ if __name__ == "__main__":
         sys.exit(1)
  
      
-    frame = frame.limit(500) 
+    # frame = frame.limit(1000) 
+    # cleaned_frame = frame
     # Transform
     cleaned_frame = naive_clean(frame)
     # cleaned_frame = a_shorter_cleaning_function(frame)
@@ -183,9 +185,21 @@ if __name__ == "__main__":
 
     # Load
     cleaned_frame.write.parquet(
-        path=str(target_dir / "cleaned_flights"),
+        path=str(target_dir / "cleaned_flights_snappy"),
         mode="overwrite",
         # Extra exercise: how much bigger are the files when the compression codec is set to "uncompressed"? And 'gzip'?
         compression="snappy",
     )
-    
+       # Load
+    cleaned_frame.write.parquet(
+        path=str(target_dir / "cleaned_flights_uncompressed"),
+        mode="overwrite",
+        # Extra exercise: how much bigger are the files when the compression codec is set to "uncompressed"? And 'gzip'?
+        compression="uncompressed",
+    )
+    cleaned_frame.write.parquet(
+        path=str(target_dir / "cleaned_flights_gzip"),
+        mode="overwrite",
+        # Extra exercise: how much bigger are the files when the compression codec is set to "uncompressed"? And 'gzip'?
+        compression="gzip",
+    )

@@ -36,22 +36,9 @@ def delays_per_weekday(df):
     return df.na.replace(day_dict, "day_name")
 
 def delays_reasons(df):
-    # df = df.select(
-    #     "flight_date", 
-    #     "flight_number",
-    #     "dep_delay", 
-    #     "carrier_delay_in_minutes", 
-    #     "weather_delay_in_minutes", 
-    #     "nas_delay_in_minutes", 
-    #     "security_delay_in_minutes",
-    #    "late_aircraft_delay_in_minutes",
-    # )
-
-
-    
+ 
     column_list = [c for c in df.columns if c.endswith("_delay_in_minutes")]
     df = df.select(*column_list) 
-    #df = df.na.replace(0, None)
     for c in column_list:
         df = df.withColumn(c, sf.when(col(c)>0, sf.lit(1))) 
     df.show()
