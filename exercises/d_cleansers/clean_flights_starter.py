@@ -87,7 +87,7 @@ import pyspark.sql.functions as sf
 from pyspark.sql.utils import AnalysisException
 from py4j.protocol import Py4JJavaError
 
-DEBUG = True
+DEBUG = False
 
 
 def naive_clean(frame: DataFrame) -> DataFrame:
@@ -133,9 +133,7 @@ def load_dataset_with_spark(spark: SparkSession, location: str) -> DataFrame:
 if __name__ == "__main__":
     # Let's define some variables that you should ideally be getting from
     # configuration, instead of hardcoding them like we do here.
-    location_of_data_in_the_cloud = (
-        "s3a://dmacademy-course-assets/pyspark/AirlineSubsetCsv.tar.gz"
-    )
+    location_of_data_in_the_cloud = "s3a://dmacademy-course-assets/pyspark/airline_subset"
     # Here's a good practice: use relative paths, so that the location of this
     # project on your system won't mean editing paths.
     path_to_exercises = Path(__file__).parents[1]
@@ -164,7 +162,7 @@ if __name__ == "__main__":
 
     # Transform
     cleaned_frame = naive_clean(frame)
-    # cleaned_frame = a_shorter_cleaning_function(frame)
+
     if DEBUG:
         cleaned_frame.explain()  # instructional to see how Spark optimized the operations we requested.
         cleaned_frame.cache().show()
