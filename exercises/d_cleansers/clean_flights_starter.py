@@ -136,8 +136,8 @@ if __name__ == "__main__":
     location_of_data_in_the_cloud = "s3a://dmacademy-course-assets/pyspark/airline_subset"
     # Here's a good practice: use relative paths, so that the location of this
     # project on your system won't mean editing paths.
-    path_to_exercises = Path(__file__).parents[1]
-    target_dir = path_to_exercises / "target"
+    repo_root = Path(__file__).parents[2]
+    target_dir = repo_root / "data" / "clean_zone"
     # Create the folder where the results of this script's ETL-pipeline will
     # be stored.
     target_dir.mkdir(exist_ok=True)
@@ -149,8 +149,7 @@ if __name__ == "__main__":
         # We've added this block in case you have the dataset locally already and want to
         # develop faster. However, for the end goal, you should be getting your data from
         # the cloud service provider.
-        resources_dir = path_to_exercises / "resources"
-        location_of_local_data = resources_dir / "flights"
+        location_of_local_data = repo_root / "data" / "raw_zone" / "flights"
         frame = load_data_from_local(location_of_local_data)
     except AnalysisException:
         print("Both attempting to load directly from cloud storage and from the"
@@ -170,7 +169,7 @@ if __name__ == "__main__":
 
     # Load
     cleaned_frame.write.parquet(
-        path=str(target_dir / "cleaned_flights"),
+        path=str(target_dir / "flights"),
         mode="overwrite",
         # Extra exercise: how much bigger are the files when the compression codec is set to "uncompressed"? And 'gzip'?
         compression="snappy",

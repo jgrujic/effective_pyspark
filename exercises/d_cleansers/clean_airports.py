@@ -1,16 +1,25 @@
+from pathlib import Path
+
 from pyspark.sql import SparkSession
 
-from exercises.i_catalog.catalog import catalog, load_frame_from_catalog
 
+def main(spark: SparkSession):
+    repo_root = Path(__file__).parents[2]
+    df = (
+        spark.read.csv(
+            str(repo_root / "data" / "raw_zone" / "airports"),
+            header=True,
+            sep=",",
+        )
+        .drop("_c2")
+        .dropDuplicates(["AIRPORT"])
+    )
 
-def main():
-    df = load_frame_from_catalog("raw_airports").drop("_c2").dropDuplicates(["AIRPORT"])
-
-    datalink = catalog["clean_airports"]
-    df.write.save(
-        path=str(datalink.path),
+    # There is no meaningful cleaning to be done, simply change the
+    # serialization format to Parquet and be done with it.
+    df.write.parquet(
+        path=str(repo_root / "data" / "clean_zone" / "airports"),
         mode="overwrite",
-        format=datalink.format,
     )
 
 
@@ -21,9 +30,7 @@ if __name__ == "__main__":
     # especially when working in a cloud environment. Consider pandas for local
     # development on such tiny datasets or even pure Python.
 
-    # Here, we set this option explicitly, so that we don't create 200 tiny 
-    # files from the call to distinct()
-    import time
-    time.sleep(60)
+    # Here, we set this option explicitly, so that we don't create 200 tiny
+    # files from the call to distinct() / dropDuplicates()
     spark.conf.set("spark.sql.shuffle.partitions", "1")
-    main()
+    main(spark)

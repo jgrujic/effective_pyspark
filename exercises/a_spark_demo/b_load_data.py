@@ -15,7 +15,7 @@ from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.getOrCreate()
 
-csv_file_path = Path(__file__).parents[1] / "resources" / "pms_under_elizabeth_2nd.csv"
+csv_file_path = Path(__file__).parents[2] / "data" / "raw_zone" / "pms_under_elizabeth_2nd.csv"
 
 # Python-esque:
 frame = spark.read.csv(
