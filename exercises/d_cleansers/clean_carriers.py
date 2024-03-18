@@ -13,7 +13,6 @@ def main(spark: SparkSession):
             sep=",",
         )
         .drop("_c2")
-        .dropDuplicates(["AIRPORT"])
     )
     for colname in ("START_DATE_SOURCE", "THRU_DATE_SOURCE"):
         df = df.withColumn(colname, psf.to_date(colname))
