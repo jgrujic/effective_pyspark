@@ -7,7 +7,7 @@ def main(spark: SparkSession):
     repo_root = Path(__file__).parents[2]
     df = (
         spark.read.csv(
-            str(repo_root / "data" / "raw_zone" / "airports"),
+            str(repo_root / "data" / "raw_zone" / "airports.csv"),
             header=True,
             sep=",",
         )
