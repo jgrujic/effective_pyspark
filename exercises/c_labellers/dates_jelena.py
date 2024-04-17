@@ -5,10 +5,16 @@ tests/test_labellers.py. You should not modify the tests! For the last exercise
 here, the one about labelling, with Spark, Belgian holidays, you may alter the
 import statement at the top of the test module to reference the right alternative."""
 import datetime
+import holidays
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col, dayofweek, udf, lit, min as sfmin, max as sfmax, when
+from pyspark.sql.types import BooleanType, DateType, StructField, StructType
 
-from pyspark.sql import DataFrame
+MIN_YEAR_FOR_HOLIDAYS = 2000
+MAX_YEAR_FOR_HOLIDAYS = 2020
+
 def is_belgian_holiday(date: datetime.date) -> bool:
-    return date in holiday.BE()
+    return date in holidays.BE()
 
 
 def label_weekend(
@@ -16,11 +22,14 @@ def label_weekend(
 ) -> DataFrame:
     """Adds a column indicating whether the attribute `colname`
     in the corresponding row is a weekend day."""
-  
-    return (frame
-            .withColumn("day_of_week", dayofweek(sf.col("colname")))
-            .withColumn(new_colname, sf.when(sf.col("day_of_week").isin([1, 7], True).otherwise(False)))    
+
+    frame = (frame
+            .withColumn("day_of_week", dayofweek(colname))
+            .withColumn(new_colname, col("day_of_week").isin([1, 7])) 
+            .drop("day_of_week")   
     )
+    return frame
+           
 
 def label_holidays(
     frame: DataFrame,
@@ -29,7 +38,7 @@ def label_holidays(
 ) -> DataFrame:
     """Adds a column indicating whether the column `colname`
     is a holiday."""
-    udf_is_belgian_holiday = sf.udf(is_begian_holiday, ReturnType=BooleanType())
+    udf_is_belgian_holiday = udf(is_begian_holiday, ReturnType=BooleanType())
     return (frame
             .withColumn(new_colname, udf_is_belgina_holiday(col(colname)))
     )
@@ -53,10 +62,40 @@ def label_holidays2(
 
 
 def label_holidays3(
-    frame: DataFrame,
+    df: DataFrame,
     colname: str = "date",
     new_colname: str = "is_belgian_holiday",
-) -> DataFrame:
+) -> DataFrame:    
     """Adds a column indicating whether the column `colname`
     is a holiday. An alternative implementation."""
-    pass
+    holidays_be = holidays.BE(
+        years=list(range(MIN_YEAR_FOR_HOLIDAYS, MAX_YEAR_FOR_HOLIDAYS))
+    )
+    spark = SparkSession.getActiveSession()
+    holidays_frame = spark.createDataFrame(
+        data=[(day, True) for day in holidays_be.keys()],
+        schema=StructType(
+            [
+                StructField(colname, DateType(), False),
+                StructField(new_colname, BooleanType(), False),
+            ]
+        ),
+    )
+
+    part1 = df.join(holidays_frame, on=colname, how="left")
+    #part2 = part1.na.fill(False, subset=[new_colname])
+    part4 = part1.withColumn(new_colname, (col(colname).isNotNull()) & (col(new_colname).isNull()))
+    part4.show()
+    part3 = part1.withColumn(new_colname, 
+            when((col(colname).isNotNull()) & (col(new_colname).isNull()), lit(False) 
+            ).otherwise(col(new_colname))
+    )
+    #df = df.withColumn("is_belgian_holiday", when((col(colname).isNotNull()) & (col(new_colname).isNull()), False).otherwise())
+    # part31 = part1.withColumn("is_belgian_holiday", 
+    #         when(col("date").isNull(), lit(False) 
+    #         ).otherwise(col(new_colname))
+    # )
+    part1.show()
+    # part2.show()
+    #part3.show()
+    return part3
