@@ -83,19 +83,9 @@ def label_holidays3(
     )
 
     part1 = df.join(holidays_frame, on=colname, how="left")
-    #part2 = part1.na.fill(False, subset=[new_colname])
-    part4 = part1.withColumn(new_colname, (col(colname).isNotNull()) & (col(new_colname).isNull()))
-    part4.show()
-    part3 = part1.withColumn(new_colname, 
-            when((col(colname).isNotNull()) & (col(new_colname).isNull()), lit(False) 
+    part2 = part1.withColumn(new_colname, 
+            when((col(colname).isNotNull()) & (col(new_colname).isNull()), False 
             ).otherwise(col(new_colname))
     )
-    #df = df.withColumn("is_belgian_holiday", when((col(colname).isNotNull()) & (col(new_colname).isNull()), False).otherwise())
-    # part31 = part1.withColumn("is_belgian_holiday", 
-    #         when(col("date").isNull(), lit(False) 
-    #         ).otherwise(col(new_colname))
-    # )
-    part1.show()
-    # part2.show()
-    #part3.show()
-    return part3
+ 
+    return part2
