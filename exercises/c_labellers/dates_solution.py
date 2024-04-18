@@ -1,4 +1,5 @@
 import datetime
+import pyspark.sql.functions as sf
 
 import holidays
 from pyspark.sql import DataFrame, SparkSession
@@ -73,12 +74,30 @@ def label_holidays2(
     # situations you do), then you have no choice but to traverse the data at
     # least one extra time, which you can do with an aggregation like this:
     # min_year, max_year = [x.year for x in frame.agg(sfmin(colname), sfmax(colname)).head()]
+
+
     holidays_be = holidays.BE(
         years=list(range(MIN_YEAR_FOR_HOLIDAYS, MAX_YEAR_FOR_HOLIDAYS))
     )
     return frame.withColumn(
         new_colname, col(colname).isin(list(holidays_be.keys()))
     )
+
+
+def label_holidays22(
+    frame: DataFrame,
+    colname: str = "date",
+    new_colname: str = "is_belgian_holiday",
+) -> DataFrame:
+    """An alternative implementation. Similar to previous one,
+    where we use rdd.map to get the info from the DataFrame"""
+
+
+    df = frame.agg(sf.min('date'), sf.max('date'))
+    min, max = df.rdd.map(tuple).collect()[0]
+    holidays_be = holidays.BE(years=range(min.year, max.year))
+    print(list(holidays_be.keys()))
+    return frame.withColumn(new_colname, sf.col(colname).isin(list(holidays_be.keys())))
 
 
 def label_holidays3(
@@ -121,8 +140,10 @@ def label_holidays3(
     holidays_frame.show(51)
     holidays_frame.printSchema()
     part1 = frame.join(holidays_frame, on=colname, how="left")
-
-    part2 = part1.na.fill(False, subset=[new_colname])
+    part2 = part1.withColumn(new_colname, 
+            when((col(colname).isNotNull()) & (col(new_colname).isNull()), False 
+            ).otherwise(col(new_colname))
+    )
     part1.show()
     part2.show()
     part2.printSchema()

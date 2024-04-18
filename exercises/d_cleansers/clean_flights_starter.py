@@ -136,7 +136,7 @@ if __name__ == "__main__":
     location_of_data_in_the_cloud = "s3a://dmacademy-course-assets/pyspark/airline_subset"
     # Here's a good practice: use relative paths, so that the location of this
     # project on your system won't mean editing paths.
-    repo_root = Path(__file__).parents[2]
+    repo_root = Path(__file__).resolve().parents[2]
     target_dir = repo_root / "data" / "clean_zone"
     # Create the folder where the results of this script's ETL-pipeline will
     # be stored.
