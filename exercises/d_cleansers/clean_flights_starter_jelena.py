@@ -147,7 +147,8 @@ if __name__ == "__main__":
     # Here's a good practice: use relative paths, so that the location of this
     # project on your system won't mean editing paths.
     path_to_exercises = Path(__file__).resolve().parents[1]
-    target_dir = path_to_exercises / "target"
+    path_to_data = Path(__file__).resolve().parents[2]
+    target_dir = path_to_data / "data" / "clean_zone"
     # Create the folder where the results of this script's ETL-pipeline will
     # be stored.
     target_dir.mkdir(exist_ok=True)
@@ -185,21 +186,22 @@ if __name__ == "__main__":
 
     # Load
     cleaned_frame.write.parquet(
-        path=str(target_dir / "cleaned_flights_snappy"),
+        path=str(target_dir / "clean_flights"),
         mode="overwrite",
         # Extra exercise: how much bigger are the files when the compression codec is set to "uncompressed"? And 'gzip'?
         compression="snappy",
     )
-       # Load
-    cleaned_frame.write.parquet(
-        path=str(target_dir / "cleaned_flights_uncompressed"),
-        mode="overwrite",
-        # Extra exercise: how much bigger are the files when the compression codec is set to "uncompressed"? And 'gzip'?
-        compression="uncompressed",
-    )
-    cleaned_frame.write.parquet(
-        path=str(target_dir / "cleaned_flights_gzip"),
-        mode="overwrite",
-        # Extra exercise: how much bigger are the files when the compression codec is set to "uncompressed"? And 'gzip'?
-        compression="gzip",
-    )
+    cleaned_frame.show()
+    #    # Load
+    # cleaned_frame.write.parquet(
+    #     path=str(target_dir / "cleaned_flights_uncompressed"),
+    #     mode="overwrite",
+    #     # Extra exercise: how much bigger are the files when the compression codec is set to "uncompressed"? And 'gzip'?
+    #     compression="uncompressed",
+    # )
+    # cleaned_frame.write.parquet(
+    #     path=str(target_dir / "cleaned_flights_gzip"),
+    #     mode="overwrite",
+    #     # Extra exercise: how much bigger are the files when the compression codec is set to "uncompressed"? And 'gzip'?
+    #     compression="gzip",
+    # )

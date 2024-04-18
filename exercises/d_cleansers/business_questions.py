@@ -57,7 +57,9 @@ def delays_reasons(df):
     # df_unpivoted = df_pivot.unpivot([], df_pivot.columns, "name", "val")
     # df_unpivoted.show()
     # # end of pivoting
+ 
 
+    # Not very readable solution
     # cond = "sf.when" + ".when".join(["(col('" + c + "') == col('max_value'), sf.lit('" + c + "'))" for c in df.columns])
     # df = df.withColumn("MAX", eval(cond))\
  
@@ -79,10 +81,13 @@ if __name__ == "__main__":
     resources_dir =  path_to_exercises / "resources"
     # Create the folder where the results of this script's ETL-pipeline will
     # be stored.
+    
+    path=str(target_dir / "cleaned_flights_snappy")
+    repo_root = Path(__file__).resolve().parents[2]
+    data_dir = repo_root / "data" / "raw_zone"
     target_dir.mkdir(exist_ok=True)
-    path=str(target_dir / "cleaned_flights")
-    clean_flights = spark.read.parquet(str(target_dir / "cleaned_flights"))
-    clean_carriers = spark.read.csv(str(resources_dir / "carriers.csv"),header=True, )
+    clean_flights = spark.read.parquet(str(target_dir / "cleaned_flights_snappy"))
+    clean_carriers = spark.read.csv(str(data_dir / "carriers.csv"),header=True, )
     
     clean_flights.printSchema()
     n_flights, n_arr_delay = AA_flights(clean_flights, clean_carriers)
