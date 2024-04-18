@@ -13,7 +13,7 @@ from pyspark.sql.types import (
 from exercises.c_labellers.dates_jelena import (
     label_weekend,
     is_belgian_holiday,
-    label_holidays3 as label_holidays,  # Allows easier switching for people looking into the alternative forms. Simply replace the first word with label_holidays2 or label_holidays3.
+    label_holidays22 as label_holidays,  # Allows easier switching for people looking into the alternative forms. Simply replace the first word with label_holidays2 or label_holidays3.
 )
 from tests.comparers import assert_frames_functionally_equivalent
 

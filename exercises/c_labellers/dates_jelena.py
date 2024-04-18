@@ -6,6 +6,7 @@ here, the one about labelling, with Spark, Belgian holidays, you may alter the
 import statement at the top of the test module to reference the right alternative."""
 import datetime
 import holidays
+import pyspark.sql.functions as sf
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, dayofweek, udf, lit, min as sfmin, max as sfmax, when
 from pyspark.sql.types import BooleanType, DateType, StructField, StructType
@@ -57,8 +58,25 @@ def label_holidays2(
 
     min_year = frame.agg({colname: "min"}).collect()[0].year
     max_year = frame.agg({colname: "max"}).collect()[0].year
-    holidays_be = holiday.BE(years=range(min_year, max_year))
-    return frame.withColumn(new_colname, col(colname).isin(holdays_be))
+    holidays_be = holidays.BE(years=range(min_year, max_year))
+    return frame.withColumn(new_colname, col(colname).isin(list(holidays_be.keys())))
+
+
+def label_holidays22(
+    frame: DataFrame,
+    colname: str = "date",
+    new_colname: str = "is_belgian_holiday",
+) -> DataFrame:
+    """Adds a column indicating whether the column `colname`
+    is a holiday. An alternative implementation."""
+
+
+    df = frame.agg(sf.min('date'), sf.max('date'))
+    min, max = df.rdd.map(tuple).collect()[0]
+    holidays_be = holidays.BE(years=range(min.year, max.year))
+    print(list(holidays_be.keys()))
+    return frame.withColumn(new_colname, sf.col(colname).isin(list(holidays_be.keys())))
+
 
 
 def label_holidays3(
